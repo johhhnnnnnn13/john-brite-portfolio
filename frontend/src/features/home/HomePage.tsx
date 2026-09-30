@@ -24,7 +24,7 @@ export function HomePage() {
         <h1>John<br /><span>Brite.</span></h1>
         <p className="hero__lede">I build <strong>secure backends</strong> and thoughtful web experiences.</p>
         <p className="hero__body">Spring Boot, React, SQL, and automated delivery pipelines. Complex business workflows, shaped into reliable applications.</p>
-        <div className="hero__actions"><AnchorButton href="#projects">View projects <ArrowDown size={17} /></AnchorButton><span className="button button--secondary button--disabled" aria-disabled="true" title="Owner-reviewed resume has not been supplied">Resume pending <Download size={17} /></span></div>
+        <div className="hero__actions"><AnchorButton href="#projects">View projects <ArrowDown size={17} /></AnchorButton><a className="button button--secondary" href={`${import.meta.env.BASE_URL}John-Brite-Resume.pdf`} download>Download resume <Download size={17} /></a></div>
         <a className="email-link" href={`mailto:${profile.email}`}><Mail size={16} /> {profile.email}</a>
       </div>
       <div className="hero__visual"><Architecture /></div>
