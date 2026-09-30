@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: john-brite-portfolio
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/portfolio}
+    username: ${DATABASE_USERNAME:portfolio}
+    password: ${DATABASE_PASSWORD:portfolio}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+portfolio:
+  frontend-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  contact:
+    rate-window: ${CONTACT_RATE_WINDOW:PT1M}
+    retention: ${CONTACT_RETENTION:P180D}

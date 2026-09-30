@@ -1,0 +1,16 @@
+trigger:
+  branches:
+    include: [main]
+pr:
+  branches:
+    include: [main]
+
+variables:
+  imageTag: $(Build.SourceVersion)
+
+stages:
+- template: pipelines/templates/validate.yml
+- template: pipelines/templates/build.yml
+- template: pipelines/templates/deploy.yml
+  parameters:
+    deployEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}

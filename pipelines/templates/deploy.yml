@@ -1,0 +1,59 @@
+parameters:
+- name: deployEnabled
+  type: boolean
+  default: false
+
+stages:
+- stage: Staging
+  dependsOn: Build
+  condition: and(succeeded(), eq(${{ parameters.deployEnabled }}, true))
+  jobs:
+  - deployment: DeployStaging
+    environment: portfolio-staging
+    pool: { vmImage: ubuntu-latest }
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: portfolio-azure
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az containerapp update -g "$RESOURCE_GROUP" -n portfolio-api-staging --image "$ACR_LOGIN_SERVER/john-brite/backend:$(imageTag)"
+                az containerapp update -g "$RESOURCE_GROUP" -n portfolio-web-staging --image "$ACR_LOGIN_SERVER/john-brite/frontend:$(imageTag)"
+            env:
+              RESOURCE_GROUP: $(STAGING_RESOURCE_GROUP)
+              ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)
+          - script: |
+              set -euo pipefail
+              curl --fail --retry 5 "$(STAGING_WEB_URL)/"
+              curl --fail --retry 5 "$(STAGING_API_URL)/actuator/health/readiness"
+              curl --fail --retry 5 "$(STAGING_API_URL)/api/v1/profile"
+              code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -d '{"name":"","email":"invalid","subject":"","message":"","website":"smoke-test"}' "$(STAGING_API_URL)/api/v1/contact")
+              test "$code" = "400"
+            displayName: Smoke checks
+
+- stage: Production
+  dependsOn: Staging
+  condition: succeeded()
+  jobs:
+  - deployment: PromoteProduction
+    environment: portfolio-production
+    pool: { vmImage: ubuntu-latest }
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: portfolio-azure
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az containerapp update -g "$RESOURCE_GROUP" -n portfolio-api --image "$ACR_LOGIN_SERVER/john-brite/backend:$(imageTag)"
+                az containerapp update -g "$RESOURCE_GROUP" -n portfolio-web --image "$ACR_LOGIN_SERVER/john-brite/frontend:$(imageTag)"
+            env:
+              RESOURCE_GROUP: $(PRODUCTION_RESOURCE_GROUP)
+              ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)

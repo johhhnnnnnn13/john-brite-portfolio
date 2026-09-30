@@ -1,0 +1,6 @@
+server:
+  error:
+    include-message: never
+spring:
+  jpa:
+    show-sql: false
