@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-# Add Sitemap after the production domain is confirmed.
+Sitemap: https://johhhnnnnnn13.github.io/john-brite-portfolio/sitemap.xml
