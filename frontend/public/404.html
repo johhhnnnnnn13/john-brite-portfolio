@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Opening John Brite's portfolio</title>
+    <script>
+      (function (location) {
+        var repositorySegments = 1;
+        var base = location.pathname.split('/').slice(0, 1 + repositorySegments).join('/');
+        var route = location.pathname.split('/').slice(1 + repositorySegments).join('/');
+        var query = location.search ? '&' + location.search.slice(1).replace(/&/g, '~and~') : '';
+        location.replace(location.protocol + '//' + location.host + base + '/?/' + route + query + location.hash);
+      }(window.location));
+    </script>
+  </head>
+  <body></body>
+</html>

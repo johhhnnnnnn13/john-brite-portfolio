@@ -17,6 +17,16 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function (location) {
+        if (location.search.startsWith('?/')) {
+          var route = location.search.slice(1).split('&').map(function (part) {
+            return part.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(null, '', location.pathname.slice(0, -1) + route + location.hash);
+        }
+      }(window.location));
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
